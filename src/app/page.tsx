@@ -147,7 +147,7 @@ export default function Home() {
       if (droppedFile.name.endsWith('.docx')) {
         setFile(droppedFile);
       } else {
-        setError('Please upload a valid .docx Word document.');
+        setError('Por favor sube un documento Word (.docx) válido.');
       }
     }
   };
@@ -183,17 +183,17 @@ export default function Home() {
     try {
       const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
       if (!apiKey) {
-        throw new Error("Missing NEXT_PUBLIC_GEMINI_API_KEY environment variable. Please configure it in Netlify.");
+        throw new Error("Falta la variable de entorno NEXT_PUBLIC_GEMINI_API_KEY. Por favor configúrala en Netlify.");
       }
 
       let contentToProcess = text;
       if (activeTab === 'file') {
-        if (!file) throw new Error('Please select a file to process.');
+        if (!file) throw new Error('Por favor selecciona un archivo para procesar.');
         contentToProcess = await extractTextFromDocx(file);
       }
 
       if (!contentToProcess.trim()) {
-        throw new Error('Please provide some text or a non-empty document.');
+        throw new Error('Por favor ingresa texto o sube un documento que no esté vacío.');
       }
 
       const genAI = new GoogleGenerativeAI(apiKey);
@@ -240,7 +240,7 @@ Return ONLY the valid CSV output.
       setCsvResult(csvText);
 
     } catch (err: any) {
-      setError(err.message || 'An unexpected error occurred.');
+      setError(err.message || 'Ocurrió un error inesperado.');
     } finally {
       setIsLoading(false);
     }
@@ -253,7 +253,7 @@ Return ONLY the valid CSV output.
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
     link.setAttribute('href', url);
-    link.setAttribute('download', 'Brightspace_Import.csv');
+    link.setAttribute('download', 'Importacion_Brightspace.csv');
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();
@@ -263,10 +263,10 @@ Return ONLY the valid CSV output.
   return (
     <main className={styles.container}>
       <header className={`${styles.header} animate-fade-in`}>
-        <h1 className={styles.title}>Brightspace Evaluator</h1>
+        <h1 className={styles.title}>Evaluador de Brightspace</h1>
         <p className={styles.subtitle}>
-          Instantly convert your quizzes, exams, and assessments into a Brightspace-ready CSV format using AI. 
-          Supports written response, multiple choice, matching, and more.
+          Convierte instantáneamente tus cuestionarios, exámenes y evaluaciones a un formato CSV compatible con Brightspace utilizando IA. 
+          Soporta respuesta escrita, opción múltiple, relacionar y más.
         </p>
       </header>
 
@@ -277,26 +277,26 @@ Return ONLY the valid CSV output.
               className={`${styles.tab} ${activeTab === 'text' ? styles.tabActive : ''}`}
               onClick={() => setActiveTab('text')}
             >
-              Paste Text
+              Pegar Texto
             </button>
             <button 
               className={`${styles.tab} ${activeTab === 'file' ? styles.tabActive : ''}`}
               onClick={() => setActiveTab('file')}
             >
-              Upload Word (.docx)
+              Subir Word (.docx)
             </button>
           </div>
 
           {activeTab === 'text' && (
             <textarea
               className={`glass-input ${styles.textarea}`}
-              placeholder="Paste your questions here... e.g. 
-1. What is the capital of France?
-A) London
-B) Paris
-C) Berlin
+              placeholder="Pega tus preguntas aquí... ej. 
+1. ¿Cuál es la capital de Francia?
+A) Londres
+B) París
+C) Berlín
 D) Madrid
-Answer: B"
+Respuesta: B"
               value={text}
               onChange={(e) => setText(e.target.value)}
             />
@@ -324,10 +324,10 @@ Answer: B"
                 ) : (
                   <>
                     <p style={{ fontWeight: 600, color: 'var(--text-primary)', marginBottom: '8px' }}>
-                      Click to upload or drag and drop
+                      Haz clic para subir o arrastra y suelta
                     </p>
                     <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-                      Word documents (.docx) only
+                      Solo documentos Word (.docx)
                     </p>
                   </>
                 )}
@@ -350,11 +350,11 @@ Answer: B"
             >
               {isLoading ? (
                 <>
-                  <span className="loader"></span> Processing AI...
+                  <span className="loader"></span> Procesando IA...
                 </>
               ) : (
                 <>
-                  <FileType size={20} /> Convert to CSV
+                  <FileType size={20} /> Convertir a CSV
                 </>
               )}
             </button>
@@ -366,9 +366,9 @@ Answer: B"
             <div className={styles.successIcon}>
               <CheckCircle2 size={64} />
             </div>
-            <h2>Conversion Successful!</h2>
+            <h2>¡Conversión Exitosa!</h2>
             <p style={{ color: 'var(--text-secondary)', textAlign: 'center', maxWidth: '500px' }}>
-              Your assessment has been intelligently formatted into a Brightspace compatible CSV.
+              Tu evaluación ha sido formateada inteligentemente en un archivo CSV compatible con Brightspace.
             </p>
             
             <div style={{ display: 'flex', gap: '16px', marginTop: '16px' }}>
@@ -376,7 +376,7 @@ Answer: B"
                 className="btn-primary" 
                 onClick={downloadCsv}
               >
-                <Download size={20} /> Download CSV
+                <Download size={20} /> Descargar CSV
               </button>
               
               <button 
@@ -387,7 +387,7 @@ Answer: B"
                   setFile(null);
                 }}
               >
-                Convert Another
+                Convertir Otro
               </button>
             </div>
           </div>
