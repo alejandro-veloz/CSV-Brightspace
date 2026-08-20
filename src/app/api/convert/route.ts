@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
+export const runtime = 'edge';
+export const maxDuration = 60;
+export const dynamic = 'force-dynamic';
+
 const BRIGHTSPACE_CSV_TEMPLATE = `
 //(Note: The 'images' folder is assumed to be in the "/content/<course path>/" directory),,,,
 //Question Text is always a required field,,,,
