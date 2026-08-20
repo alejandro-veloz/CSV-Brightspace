@@ -133,12 +133,12 @@ export async function POST(req: NextRequest) {
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
-    const prompt = \`
+    const prompt = `
 You are an expert instructional designer and technical assistant. 
 Your task is to convert the following raw assessment text (which may be a mix of questions, answers, multiple choice options, and feedback) into a strict Brightspace-compatible CSV format.
 
 Here is the exact template/format you MUST follow for Brightspace CSVs:
-\${BRIGHTSPACE_CSV_TEMPLATE}
+${BRIGHTSPACE_CSV_TEMPLATE}
 
 Rules:
 1. Identify the question type for each question (MC = Multiple Choice, TF = True/False, WR = Written Response, SA = Short Answer, M = Matching, MS = MultiSelect, O = Ordering).
@@ -152,18 +152,18 @@ Rules:
 Here is the raw text to convert:
 
 ---
-\${text}
+${text}
 ---
 
 Return ONLY the valid CSV output.
-\`;
+`;
 
     const result = await model.generateContent(prompt);
     const response = await result.response;
     let csvText = response.text();
 
     // Clean up potential markdown formatting from the response
-    csvText = csvText.replace(/^\`\`\`(csv)?/g, '').replace(/\`\`\`$/g, '').trim();
+    csvText = csvText.replace(/^```(csv)?/g, '').replace(/```$/g, '').trim();
 
     return NextResponse.json({ csv: csvText });
   } catch (error: any) {
