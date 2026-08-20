@@ -131,7 +131,7 @@ export async function POST(req: NextRequest) {
     }
 
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    // model will be initialized later
 
     const prompt = `
 You are an expert instructional designer and technical assistant. 
@@ -158,7 +158,19 @@ ${text}
 Return ONLY the valid CSV output.
 `;
 
-    const result = await model.generateContent(prompt);
+    // Try 1.5 flash first, if it fails we'll see the error
+    let model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    let result;
+    
+    try {
+      result = await model.generateContent(prompt);
+    } catch (primaryError: any) {
+      console.warn("Primary model failed, trying fallback gemini-1.0-pro...", primaryError.message);
+      // Fallback to gemini-1.0-pro
+      model = genAI.getGenerativeModel({ model: 'gemini-1.0-pro' });
+      result = await model.generateContent(prompt);
+    }
+
     const response = await result.response;
     let csvText = response.text();
 
@@ -168,8 +180,24 @@ Return ONLY the valid CSV output.
     return NextResponse.json({ csv: csvText });
   } catch (error: any) {
     console.error('Error generating CSV:', error);
+    
+    // Fetch available models for debugging
+    let availableModels = "Could not fetch models list.";
+    try {
+      const apiKey = process.env.GEMINI_API_KEY;
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+      const data = await res.json();
+      if (data && data.models) {
+        availableModels = data.models.map((m: any) => m.name.replace('models/', '')).join(', ');
+      }
+    } catch (e) {
+      // ignore
+    }
+
     return NextResponse.json(
-      { error: error.message || 'An error occurred during conversion' },
+      { 
+        error: `Conversion Error: ${error.message}\n\nDEBUG INFO:\nAvailable models for your API Key: ${availableModels}` 
+      },
       { status: 500 }
     );
   }
