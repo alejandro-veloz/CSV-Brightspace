@@ -87,8 +87,14 @@ export default function Home() {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to convert document.');
+        const errorText = await response.text();
+        let errorData;
+        try {
+          errorData = JSON.parse(errorText);
+        } catch(e) {}
+        
+        const detailedError = errorData?.error || errorData?.errorMessage || errorText || 'Failed to convert document.';
+        throw new Error(`Server returned ${response.status}: ${detailedError}`);
       }
 
       const data = await response.json();
