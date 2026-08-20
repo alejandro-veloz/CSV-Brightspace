@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenAI } from '@google/genai';
 
 const BRIGHTSPACE_CSV_TEMPLATE = `
 //(Note: The 'images' folder is assumed to be in the "/content/<course path>/" directory),,,,
@@ -121,17 +121,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Text content is required' }, { status: 400 });
     }
 
-    const apiKey = process.env.GEMINI_API_KEY;
-    
-    if (!apiKey) {
+    if (!process.env.GEMINI_API_KEY) {
       return NextResponse.json(
         { error: 'Gemini API key is not configured on the server. Please add GEMINI_API_KEY to your Netlify Environment Variables.' },
         { status: 500 }
       );
     }
 
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const ai = new GoogleGenAI({});
 
     const prompt = `
 You are an expert instructional designer and technical assistant. 
@@ -158,9 +155,11 @@ ${text}
 Return ONLY the valid CSV output.
 `;
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    let csvText = response.text();
+    const result = await ai.models.generateContent({
+      model: 'gemini-flash-latest',
+      contents: prompt,
+    });
+    let csvText = result.text ?? '';
 
     // Clean up potential markdown formatting from the response
     csvText = csvText.replace(/^```(csv)?/g, '').replace(/```$/g, '').trim();
