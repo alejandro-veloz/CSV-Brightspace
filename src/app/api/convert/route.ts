@@ -158,16 +158,16 @@ ${text}
 Return ONLY the valid CSV output.
 `;
 
-    // Try 1.5 flash first, if it fails we'll see the error
-    let model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    // The API has advanced! Using the modern 3.5 series
+    let model = genAI.getGenerativeModel({ model: 'gemini-3.5-flash' });
     let result;
     
     try {
       result = await model.generateContent(prompt);
     } catch (primaryError: any) {
-      console.warn("Primary model failed, trying fallback gemini-1.0-pro...", primaryError.message);
-      // Fallback to gemini-1.0-pro
-      model = genAI.getGenerativeModel({ model: 'gemini-1.0-pro' });
+      console.warn("Primary model failed, trying fallback gemini-2.5-flash...", primaryError.message);
+      // Fallback to 2.5 flash
+      model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
       result = await model.generateContent(prompt);
     }
 
